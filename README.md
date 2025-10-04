@@ -10,9 +10,9 @@ A full-stack medical image processing simulation app for surgical planning.
 - Backend processing with FastAPI + Python PIL
 
 ## Tech Stack
-- **Frontend**: React 18 + Vite + Tailwind CSS
+- **Frontend**: Next.js 15 + React 19 + TypeScript + Tailwind CSS
 - **Backend**: FastAPI + Python + Pillow
-- **Deployment**: GitHub Pages + Hugging Face Spaces
+- **Deployment**: Vercel + Railway
 
 ## Quick Start
 
@@ -35,20 +35,34 @@ npm run dev
 ## Project Structure
 ```
 /
-├── frontend/          # React + Vite app
+├── frontend/          # Next.js app with app router
 │   ├── src/
-│   │   ├── App.jsx
+│   │   ├── app/
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── globals.css
 │   │   ├── components/
-│   │   │   ├── UploadForm.jsx
-│   │   │   └── ImageDisplay.jsx
-│   │   ├── index.css
-│   │   └── main.jsx
-│   └── package.json
+│   │   │   ├── UploadForm.tsx
+│   │   │   └── ImageDisplay.tsx
+│   │   ├── services/
+│   │   │   ├── apiService.ts
+│   │   │   └── alertService.ts
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   └── utils/
+│   │       ├── constants.ts
+│   │       └── helpers.ts
+│   ├── public/
+│   ├── package.json
+│   ├── next.config.ts
+│   └── tsconfig.json
 ├── backend/           # FastAPI Python server
 │   ├── app.py
 │   ├── requirements.txt
 │   ├── Dockerfile
 │   └── README.md
+├── docker-compose.yml
+├── railway.json
 └── README.md
 ```
 
