@@ -19,7 +19,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - VITE_BACKEND_URL=http://localhost:8000
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:7860
     depends_on:
       - backend
     restart: unless-stopped
