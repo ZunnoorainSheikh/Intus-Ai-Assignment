@@ -1,14 +1,23 @@
+'use client'
+
 import { useState, useRef } from 'react'
 import axios from 'axios'
 import { showSuccess, showError, showInfo } from '../services/alertService'
 
-const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) => {
-  const [selectedFile, setSelectedFile] = useState(null)
+interface UploadFormProps {
+  onImageProcessed: (original: string | null, processed: string | null, phase: string) => void
+  isLoading: boolean
+  setIsLoading: (loading: boolean) => void
+  backendUrl: string
+}
+
+const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }: UploadFormProps) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedPhase, setSelectedPhase] = useState('')
   const [dragActive, setDragActive] = useState(false)
-  const fileInputRef = useRef(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = (file: File) => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       showError('Please select a valid image file (JPG, PNG)')
@@ -32,14 +41,14 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
     showInfo(`Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`)
   }
 
-  const handleFileInputChange = (e) => {
-    const file = e.target.files[0]
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
     if (file) {
       handleFileSelect(file)
     }
   }
 
-  const handleDrag = (e) => {
+  const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     if (e.type === 'dragenter' || e.type === 'dragover') {
@@ -49,7 +58,7 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
     }
   }
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
@@ -59,7 +68,7 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!selectedFile) {
@@ -100,16 +109,24 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
 
       showSuccess(`${selectedPhase.charAt(0).toUpperCase() + selectedPhase.slice(1)} phase processing completed!`)
 
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Processing error:', error)
       
-      if (error.code === 'ECONNABORTED') {
+      const axiosError = error as {
+        code?: string;
+        response?: {
+          data?: { detail?: string };
+        };
+        request?: unknown;
+      };
+      
+      if (axiosError.code === 'ECONNABORTED') {
         showError('Request timeout. Please try again with a smaller image.')
-      } else if (error.response) {
+      } else if (axiosError.response) {
         // Server responded with error
-        const errorMessage = error.response.data?.detail || 'Processing failed'
+        const errorMessage = axiosError.response.data?.detail || 'Processing failed'
         showError(`Error: ${errorMessage}`)
-      } else if (error.request) {
+      } else if (axiosError.request) {
         // Network error
         showError('Cannot connect to backend server. Please check if it\'s running.')
       } else {
@@ -120,7 +137,7 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
     }
   }
 
-  const handlePhaseChange = (phase) => {
+  const handlePhaseChange = (phase: string) => {
     setSelectedPhase(phase)
   }
 
@@ -146,7 +163,7 @@ const UploadForm = ({ onImageProcessed, isLoading, setIsLoading, backendUrl }) =
           </label>
           
           <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200 ${
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200 cursor-pointer ${
               dragActive
                 ? 'border-medical bg-medical-light'
                 : selectedFile
