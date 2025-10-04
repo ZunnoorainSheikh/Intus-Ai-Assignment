@@ -3,7 +3,7 @@
     "frontend": {
       "root": "./frontend",
       "buildCommand": "npm install && npm run build",
-      "startCommand": "npx serve -s dist -l 80",
+      "startCommand": "npm run preview",
       "envVars": {
         "VITE_BACKEND_URL": "https://antus-backend-production.up.railway.app"
       }
